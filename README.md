@@ -21,7 +21,8 @@ Chaque membre a un seul vote par anime. Il peut le changer à tout moment, ou l'
 Prérequis : Node.js 22.13 ou plus récent (la base SQLite intégrée à Node est utilisée, aucune compilation native).
 
 1. Sur le [Discord Developer Portal](https://discord.com/developers/applications), créez une application puis un bot, et copiez le token.
-2. Invitez le bot sur votre serveur avec les scopes `bot` et `applications.commands`, et les permissions : Voir les salons, Envoyer des messages, Intégrer des liens, Créer des fils publics, Envoyer des messages dans les fils.
+2. Invitez le bot sur votre serveur avec les scopes `bot` et `applications.commands`, et les permissions : Voir les salons, Envoyer des messages, Intégrer des liens, Voir les anciens messages, Créer des fils publics, Envoyer des messages dans les fils. Lien d'invitation prêt à l'emploi (remplacez `CLIENT_ID`) :
+   `https://discord.com/oauth2/authorize?client_id=CLIENT_ID&scope=bot+applications.commands&permissions=309237730304`
 3. Configurez et lancez :
 
 ```bash
