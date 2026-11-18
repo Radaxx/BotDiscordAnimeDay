@@ -44,6 +44,28 @@ export async function getAnimeById(id) {
 }
 
 /**
+ * Recherche d'animes par titre (romaji, anglais ou japonais), triés par pertinence.
+ * Renvoie des résultats légers, pour l'autocomplétion.
+ */
+export async function searchAnime(search, { limit = 10 } = {}) {
+  const data = await query(
+    `query ($search: String, $perPage: Int) {
+      Page(page: 1, perPage: $perPage) {
+        media(type: ANIME, isAdult: false, search: $search, sort: [SEARCH_MATCH, POPULARITY_DESC]) {
+          id
+          title { romaji english }
+          seasonYear
+          startDate { year }
+          format
+        }
+      }
+    }`,
+    { search, perPage: limit },
+  );
+  return data.Page.media;
+}
+
+/**
  * Tire un anime au hasard parmi les `poolSize` plus populaires,
  * en excluant les contenus adultes et les ids déjà postés.
  */
