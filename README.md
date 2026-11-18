@@ -41,6 +41,17 @@ npm start
 
 Les commandes slash sont enregistrées au démarrage. Pour tester sans attendre 10h, utilisez `/anime poster`.
 
+## Déploiement sur Railway
+
+Le dépôt contient un `Dockerfile` et un `railway.json` : Railway construit l'image et relance le bot s'il plante.
+
+1. Sur [railway.com](https://railway.com), cliquez sur **New Project → Deploy from GitHub repo** et choisissez ce dépôt (et la bonne branche dans **Settings → Source** si besoin).
+2. Dans l'onglet **Variables** du service, ajoutez `DISCORD_TOKEN`, `DISCORD_CLIENT_ID`, `DISCORD_GUILD_ID` et `DISCORD_CHANNEL_ID` (et, au besoin, les variables optionnelles de `.env.example`).
+3. **Ajoutez un volume** monté sur `/data` (clic droit sur le service → **Attach Volume**, ou `Ctrl/Cmd + K` → « volume »). Sans volume, les votes et l'historique sont effacés à chaque redéploiement.
+4. Lancez le déploiement. Dans **Deployments → View logs**, vous devez voir « Connecté en tant que … ».
+
+Aucun domaine public n'est nécessaire : le bot se connecte lui-même à Discord. Gardez une seule instance (le volume ne peut pas être partagé).
+
 ## Configuration
 
 Tout se règle dans `.env` (voir `.env.example`) : heure du post (`DAILY_CRON`), heure du récap (`RECAP_CRON`), fuseau horaire, et critères de tirage (`MIN_SCORE`, `POOL_SIZE`). Un anime déjà posté n'est jamais retiré au sort une seconde fois.

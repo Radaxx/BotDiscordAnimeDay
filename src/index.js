@@ -30,4 +30,14 @@ client.once(Events.ClientReady, async (c) => {
 
 client.on(Events.InteractionCreate, (interaction) => bot.handleInteraction(interaction));
 
+// Arrêt propre (redéploiement Railway, Ctrl+C) : on ferme Discord et la base
+for (const signal of ['SIGTERM', 'SIGINT']) {
+  process.on(signal, async () => {
+    console.log(`${signal} reçu, arrêt du bot.`);
+    await client.destroy();
+    db.raw.close();
+    process.exit(0);
+  });
+}
+
 client.login(config.token);
