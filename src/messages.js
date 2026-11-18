@@ -197,3 +197,13 @@ export function buildRecapEmbed(entries, { from, to, voters, timeZone, guildId }
   }
   return embed;
 }
+
+// Libellé d'une suggestion d'autocomplétion (100 caractères max côté Discord)
+export function autocompleteLabel(media, alreadyPosted = false) {
+  const year = media.seasonYear ?? media.startDate?.year;
+  const meta = [year, media.format ? tr(FORMATS, media.format) : null].filter(Boolean).join(', ');
+  const suffix = `${meta ? ` (${meta})` : ''}${alreadyPosted ? ' · déjà posté' : ''}`;
+  const title = displayTitle(media);
+  const max = 100 - suffix.length;
+  return (title.length > max ? `${title.slice(0, max - 1)}…` : title) + suffix;
+}

@@ -1,7 +1,8 @@
 import { MessageFlags, PermissionFlagsBits, SlashCommandBuilder, ThreadAutoArchiveDuration } from 'discord.js';
-import { getAnimeById, pickRandomAnime } from './anilist.js';
+import { getAnimeById, pickRandomAnime, searchAnime } from './anilist.js';
 import { CHOICES } from './db.js';
 import {
+  autocompleteLabel,
   buildAnimeEmbed,
   buildRecapEmbed,
   buildThreadStarter,
@@ -23,7 +24,10 @@ export const commands = [
       sc
         .setName('poster')
         .setDescription("Poster l'anime du jour maintenant")
-        .addIntegerOption((o) => o.setName('anilist_id').setDescription('Forcer un anime précis (id AniList)')),
+        .addStringOption((o) =>
+          o.setName('titre').setDescription('Choisir un anime par son titre').setAutocomplete(true).setMaxLength(100),
+        )
+        .addIntegerOption((o) => o.setName('anilist_id').setDescription('Choisir un anime par son id AniList')),
     )
     .addSubcommand((sc) => sc.setName('recap').setDescription('Poster le récap des 7 derniers jours maintenant')),
   new SlashCommandBuilder().setName('watchlist').setDescription('Les animes que tu as marqués « Ça me tente »'),
@@ -152,7 +156,11 @@ export function createBot({ client, db, config }) {
       await interaction.deferReply({ flags: MessageFlags.Ephemeral });
       const sub = interaction.options.getSubcommand();
       if (sub === 'poster') {
-        const { postId, title } = await postDailyAnime({ anilistId: interaction.options.getInteger('anilist_id') ?? undefined });
+        const anilistId = await resolveAnimeOption(
+          interaction.options.getString('titre'),
+          interaction.options.getInteger('anilist_id'),
+        );
+        const { postId, title } = await postDailyAnime({ anilistId });
         await interaction.editReply(`✅ Posté : **${title}** (#${postId}) dans <#${config.channelId}>.`);
       } else if (sub === 'recap') {
         const posted = await postWeeklyRecap();
@@ -161,8 +169,32 @@ export function createBot({ client, db, config }) {
     }
   }
 
+  // Valeur de l'option « titre » : un id (choisi dans l'autocomplétion) ou un texte libre
+  async function resolveAnimeOption(titre, anilistId) {
+    if (anilistId) return anilistId;
+    if (!titre) return undefined;
+    if (/^\d+$/.test(titre)) return Number(titre);
+    const [first] = await searchAnime(titre, { limit: 1 });
+    if (!first) throw new Error(`Aucun anime trouvé sur AniList pour « ${titre} ».`);
+    return first.id;
+  }
+
+  async function handleAutocomplete(interaction) {
+    const typed = interaction.options.getFocused().trim();
+    if (typed.length < 2) return interaction.respond([]);
+    let results = [];
+    try {
+      results = await searchAnime(typed, { limit: 10 });
+    } catch (err) {
+      console.error('[autocomplete]', err.message);
+    }
+    const posted = db.postedAnilistIds();
+    await interaction.respond(results.map((m) => ({ name: autocompleteLabel(m, posted.has(m.id)), value: String(m.id) })));
+  }
+
   async function handleInteraction(interaction) {
     try {
+      if (interaction.isAutocomplete()) return await handleAutocomplete(interaction);
       if (interaction.isChatInputCommand()) return await handleCommand(interaction);
       if (!interaction.isButton()) return;
       const [kind, rawId, choice] = interaction.customId.split(':');

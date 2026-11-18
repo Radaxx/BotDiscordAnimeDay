@@ -13,7 +13,7 @@ Chaque membre a un seul vote par anime. Il peut le changer à tout moment, ou l'
 | Commande | Qui | Effet |
 | --- | --- | --- |
 | `/watchlist` | tout le monde | Liste privée des animes marqués 🔖 « Ça me tente » |
-| `/anime poster [anilist_id]` | permission « Gérer le serveur » | Poste un anime tout de suite (au hasard, ou celui de l'id AniList donné) |
+| `/anime poster [titre] [anilist_id]` | permission « Gérer le serveur » | Poste un anime tout de suite : au hasard, ou celui choisi par son titre (avec suggestions AniList pendant la saisie) ou par son id AniList |
 | `/anime recap` | permission « Gérer le serveur » | Poste le récap des 7 derniers jours tout de suite |
 
 ## Installation

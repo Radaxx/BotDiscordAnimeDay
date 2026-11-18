@@ -120,3 +120,11 @@ test('récap : % aimé parmi ceux qui ont vu', () => {
   assert.match(e.description, /discord\.com\/channels\/g\/c\/m/);
   assert.deepEqual(e.fields.map((f) => f.value), ['Frieren · 9 envies', 'Cowboy Bebop · 41 msg']);
 });
+
+test('libellé d’autocomplétion', async () => {
+  const { autocompleteLabel } = await import('../src/messages.js');
+  const m = { title: { english: "Frieren: Beyond Journey's End", romaji: 'Sousou no Frieren' }, seasonYear: 2023, format: 'TV' };
+  assert.equal(autocompleteLabel(m), "Frieren: Beyond Journey's End (2023, TV)");
+  assert.equal(autocompleteLabel({ ...m, format: 'MOVIE' }, true), "Frieren: Beyond Journey's End (2023, Film) · déjà posté");
+  assert.equal(autocompleteLabel({ title: { romaji: 'x'.repeat(150) }, startDate: { year: 2001 } }).length, 100);
+});
