@@ -1,0 +1,28 @@
+{
+  "name": "botdiscordanimeday",
+  "version": "1.0.0",
+  "description": "Bot Discord qui poste chaque jour un anime avec votes et fil de discussion",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node --disable-warning=ExperimentalWarning src/index.js",
+    "test": "node --disable-warning=ExperimentalWarning --test test/*.test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Radaxx/BotDiscordAnimeDay.git"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Radaxx/BotDiscordAnimeDay/issues"
+  },
+  "homepage": "https://github.com/Radaxx/BotDiscordAnimeDay#readme",
+  "dependencies": {
+    "discord.js": "^14.28.1",
+    "dotenv": "^16.6.1",
+    "node-cron": "^3.0.3"
+  },
+  "type": "module",
+  "engines": {
+    "node": ">=22.13"
+  }
+}
